@@ -24,32 +24,35 @@
     <div class="m-auto sm:max-w-4xl px-4 sm:px-0">
       <div>
         <ul class="divide-y divide-gray-400">
+          {{ range $commit := .commits }}
           <li class="flex items-center py-2">
             <div class="w-24 flex-shrink-0">
               <a
-                href="https://github.com/SpicySnail"
+                href="https://github.com/{{$commit.Author}}"
                 rel="noreferrer noopener"
                 target="_blank"
               >
-                <img src="https://avatars.githubusercontent.com/u/27336752" />
+                <img src="{{$commit.AvatarURL}}" />
               </a>
 
               <div class="p-1 text-2xs text-center">
-                <div>SpicySnail</div>
-                <small>04/02/18 18:56 AM</small>
+                <div>{{$commit.Author}}</div>
+                <small>{{$commit.PrintCreatedAt}}</small>
               </div>
             </div>
 
             <div class="p-3 font-mono text-sm sm:text-base">
               <a
                 class="hover:underline"
-                href="https://github.com/SpicySnail"
+                href="{{$commit.Link}}"
                 rel="noreferrer noopener"
                 target="_blank"
-                >Added full project, code is still shit though</a
               >
+                {{$commit.Message}}
+              </a>
             </div>
           </li>
+          {{ end }}
         </ul>
       </div>
     </div>

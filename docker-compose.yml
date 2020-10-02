@@ -1,0 +1,10 @@
+version: '2'
+
+services:
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_DATABASE: latenightcommits
+      MYSQL_ROOT_PASSWORD: dev
+    ports:
+      - 3306:3306
