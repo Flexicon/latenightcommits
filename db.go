@@ -10,8 +10,8 @@ import (
 
 // Commit model
 type Commit struct {
-	ID        string `gorm:"primarykey"`
-	CreatedAt time.Time
+	ID        string    `gorm:"primarykey"`
+	CreatedAt time.Time `gorm:"index:,sort:desc,type:btree"`
 	Message   string
 	Author    string
 	AvatarURL string

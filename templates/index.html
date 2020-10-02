@@ -23,9 +23,9 @@
 
     <div class="m-auto lg:max-w-4xl px-4 lg:px-0">
       <div>
-        <ul class="divide-y divide-gray-400">
+        <ul id="commits-log" class="divide-y divide-gray-400">
           {{ range $commit := .commits }}
-          <li class="flex items-center py-2">
+          <li class="commit-entry flex items-center py-2">
             <div class="w-24 flex-shrink-0 sm:w-auto sm:flex sm:items-center">
               <a
                 class="sm:w-24 sm:flex-shrink-0"
@@ -57,5 +57,22 @@
         </ul>
       </div>
     </div>
+
+    <script src="https://unpkg.com/infinite-scroll@3/dist/infinite-scroll.pkgd.min.js"></script>
+
+    <script>
+      new InfiniteScroll('#commits-log', {
+        path: function () {
+          const commits = document.querySelectorAll('.commit-entry');
+
+          if (commits.length % 10 === 0) {
+            return `/?page=${this.loadCount + 2}`;
+          }
+        },
+        append: '.commit-entry',
+        history: false,
+        checkLastPage: true,
+      });
+    </script>
   </body>
 </html>
