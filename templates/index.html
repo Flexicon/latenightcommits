@@ -13,7 +13,7 @@
   </head>
   <body class="bg-gray-200 text-gray-800">
     <div class="bg-gray-100 shadow-md">
-      <div class="m-auto sm:max-w-4xl py-5 px-4 sm:px-0 mb-2 font-serif">
+      <div class="m-auto py-5 px-4 mb-2 font-serif lg:max-w-4xl lg:px-0">
         <h1 class="text-2xl sm:text-5xl">🍺 Late Night Commits</h1>
         <p class="text-sm sm:text-base text-gray-600">
           Cause nothing good ever happens after 2 A.M.
@@ -21,13 +21,14 @@
       </div>
     </div>
 
-    <div class="m-auto sm:max-w-4xl px-4 sm:px-0">
+    <div class="m-auto lg:max-w-4xl px-4 lg:px-0">
       <div>
         <ul class="divide-y divide-gray-400">
           {{ range $commit := .commits }}
           <li class="flex items-center py-2">
-            <div class="w-24 flex-shrink-0">
+            <div class="w-24 flex-shrink-0 sm:w-auto sm:flex sm:items-center">
               <a
+                class="sm:w-24 sm:flex-shrink-0"
                 href="https://github.com/{{$commit.Author}}"
                 rel="noreferrer noopener"
                 target="_blank"
@@ -35,7 +36,7 @@
                 <img src="{{$commit.AvatarURL}}" />
               </a>
 
-              <div class="p-1 text-2xs text-center">
+              <div class="p-1 sm:px-5 text-2xs text-center">
                 <div>{{$commit.Author}}</div>
                 <small>{{$commit.PrintCreatedAt}}</small>
               </div>
