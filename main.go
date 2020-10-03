@@ -18,7 +18,6 @@ func run() error {
 	}
 
 	e := echo.New()
-	e.Renderer = NewTemplateRenderer()
 	e.Debug = true
 
 	e.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{DisableStackAll: true}))
@@ -28,8 +27,6 @@ func run() error {
 	}))
 
 	e.GET("", indexHandler(db))
-
-	e.Static("/", "public")
 
 	return e.Start(":8080")
 }
