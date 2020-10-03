@@ -26,7 +26,7 @@ func run() error {
 		Format: "REQUEST: method=${method}, status=${status}, uri=${uri}, latency=${latency_human}\n",
 	}))
 
-	e.GET("", indexHandler(db))
+	e.GET("/commitslog", commitsLogHandler(db))
 
 	return e.Start(":8080")
 }

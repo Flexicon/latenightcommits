@@ -10,12 +10,12 @@ import (
 
 // Commit model
 type Commit struct {
-	ID        string    `gorm:"primarykey"`
-	CreatedAt time.Time `gorm:"index:,sort:desc,type:btree"`
-	Message   string
-	Author    string
-	AvatarURL string
-	Link      string
+	ID        string    `gorm:"primarykey" json:"id"`
+	CreatedAt time.Time `gorm:"index:,sort:desc,type:btree" json:"created_at"`
+	Message   string    `gorm:"size:255" json:"message"`
+	Author    string    `gorm:"size:255" json:"author"`
+	AvatarURL string    `gorm:"size:255" json:"avatar_url"`
+	Link      string    `gorm:"size:255" json:"link"`
 }
 
 // PrintCreatedAt formats the created at timestamp
