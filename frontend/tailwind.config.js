@@ -3,7 +3,10 @@ module.exports = {
     // removeDeprecatedGapUtilities: true,
     // purgeLayersByDefault: true,
   },
-  purge: [],
+  purge: [
+    './**/*.html',
+    './src/**/*.vue'
+  ],
   theme: {
     extend: {
       fontSize: {
