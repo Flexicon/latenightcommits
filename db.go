@@ -32,7 +32,7 @@ func (c *Commit) MarshalJSON() ([]byte, error) {
 
 // PrintCreatedAt formats the created at timestamp
 func (c *Commit) PrintCreatedAt() string {
-	return c.CreatedAt.Format("2006/01/02 03:04 PM")
+	return c.CreatedAt.Format("01/02/2006 15:04")
 }
 
 // SetupDB and return active connection
