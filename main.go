@@ -35,7 +35,7 @@ func run() error {
 
 	e.GET("/commitslog", commitsLogHandler(db))
 
-	return e.Start(":9000")
+	return e.Start(":" + viper.GetString("port"))
 }
 
 // ViperInit loads a viper config file and sets up needed defaults
