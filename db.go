@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/pkg/errors"
@@ -16,6 +17,17 @@ type Commit struct {
 	Author    string    `gorm:"size:255" json:"author"`
 	AvatarURL string    `gorm:"size:255" json:"avatar_url"`
 	Link      string    `gorm:"size:255" json:"link"`
+}
+
+// MarshalJSON for api responses
+func (c *Commit) MarshalJSON() ([]byte, error) {
+	return json.Marshal(struct {
+		Commit
+		CreatedAt string `json:"created_at"`
+	}{
+		*c,
+		c.PrintCreatedAt(),
+	})
 }
 
 // PrintCreatedAt formats the created at timestamp
