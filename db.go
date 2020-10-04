@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -37,10 +38,13 @@ func (c *Commit) PrintCreatedAt() string {
 
 // SetupDB and return active connection
 func SetupDB() (*gorm.DB, error) {
-	// TODO: replace with env variable for db DSN
-	db, err := gorm.Open(mysql.Open("root:dev@(localhost)/latenightcommits?charset=utf8&parseTime=True&loc=Local"), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(viper.GetString("database.url")), &gorm.Config{})
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to connect to database")
+	}
+
+	if viper.GetBool("database.verbose") {
+		db = db.Debug()
 	}
 
 	// Migrate the schema

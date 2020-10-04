@@ -2,9 +2,12 @@ package main
 
 import (
 	"log"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/pkg/errors"
+	"github.com/spf13/viper"
 )
 
 func main() {
@@ -12,6 +15,10 @@ func main() {
 }
 
 func run() error {
+	if err := ViperInit(); err != nil {
+		return err
+	}
+
 	db, err := SetupDB()
 	if err != nil {
 		return err
@@ -29,4 +36,29 @@ func run() error {
 	e.GET("/commitslog", commitsLogHandler(db))
 
 	return e.Start(":9000")
+}
+
+// ViperInit loads a viper config file and sets up needed defaults
+func ViperInit() error {
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath(".")
+
+	// Prepare for Environment variables
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	viper.AutomaticEnv()
+
+	// Defaults
+	viper.SetDefault("port", 80)
+
+	if err := viper.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			// Config file not found; ignore error if desired
+			log.Println("Config file not found, defaulting to Environment variables")
+		} else {
+			// Config file was found but another error was produced
+			return errors.Wrap(err, "viper error")
+		}
+	}
+
+	return nil
 }

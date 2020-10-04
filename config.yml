@@ -1,0 +1,5 @@
+port: 9000
+
+database:
+  url: 'root:dev@(localhost)/latenightcommits?charset=utf8&parseTime=True&loc=Local'
+  verbose: true
