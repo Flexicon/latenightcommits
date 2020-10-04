@@ -6,6 +6,8 @@
 </template>
 
 <script>
+import { reactive } from 'vue';
+
 import Header from '@/components/Header';
 import CommitLog from '@/components/CommitLog';
 
@@ -14,14 +16,16 @@ export default {
     Header,
     CommitLog,
   },
-  data() {
-    return {
-      commits: [],
-    };
-  },
-  async created() {
-    const res = await fetch('/api/commitslog').then((res) => res.json());
-    this.commits = res.log;
+  setup() {
+    const commits = reactive([]);
+
+    fetch('/api/commitslog')
+      .then((res) => res.json())
+      .then((res) => {
+        commits.push(...res.log);
+      });
+
+    return { commits };
   },
 };
 </script>
