@@ -25,7 +25,7 @@ func run() error {
 	}
 
 	e := echo.New()
-	e.Debug = true
+	e.Debug = viper.GetBool("debug")
 
 	e.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{DisableStackAll: true}))
 	e.Use(middleware.Secure())

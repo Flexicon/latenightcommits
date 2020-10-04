@@ -43,7 +43,7 @@ func SetupDB() (*gorm.DB, error) {
 		return nil, errors.Wrap(err, "failed to connect to database")
 	}
 
-	if viper.GetBool("database.verbose") {
+	if viper.GetBool("debug") {
 		db = db.Debug()
 	}
 
