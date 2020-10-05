@@ -8,8 +8,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func commitsLogHandler(db *gorm.DB) echo.HandlerFunc {
-	type CommitsLogResponse struct {
+func commitLogHandler(db *gorm.DB) echo.HandlerFunc {
+	type CommitLogResponse struct {
 		Log         []*Commit `json:"log"`
 		HasNextPage bool      `json:"has_next_page"`
 	}
@@ -26,7 +26,7 @@ func commitsLogHandler(db *gorm.DB) echo.HandlerFunc {
 		var commits []*Commit
 		db.Order("created_at desc").Limit(limit).Offset(offset).Find(&commits)
 
-		return c.JSON(http.StatusOK, CommitsLogResponse{
+		return c.JSON(http.StatusOK, CommitLogResponse{
 			Log:         commits,
 			HasNextPage: len(commits) == limit,
 		})

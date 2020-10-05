@@ -19,7 +19,7 @@ export default {
   setup() {
     const commits = reactive([]);
 
-    fetch('/api/commitslog')
+    fetch('/api/commitlog')
       .then((res) => res.json())
       .then((res) => {
         commits.push(...res.log);

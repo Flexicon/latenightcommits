@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"strings"
 
@@ -8,13 +9,19 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
+	"gorm.io/gorm"
 )
 
 func main() {
-	log.Fatalln(run())
+	if err := run(); err != nil {
+		log.Fatalln(err)
+	}
 }
 
 func run() error {
+	mode := flag.String("mode", "web", "determines whether to run a job or the web service")
+	flag.Parse()
+
 	if err := ViperInit(); err != nil {
 		return err
 	}
@@ -24,6 +31,17 @@ func run() error {
 		return err
 	}
 
+	switch *mode {
+	case "fetch":
+		return runFetchJob(db)
+	case "web":
+		return runWebApp(db)
+	default:
+		return runWebApp(db)
+	}
+}
+
+func runWebApp(db *gorm.DB) error {
 	e := echo.New()
 	e.Debug = viper.GetBool("debug")
 
@@ -33,7 +51,7 @@ func run() error {
 		Format: "REQUEST: method=${method}, status=${status}, uri=${uri}, latency=${latency_human}\n",
 	}))
 
-	e.GET("/commitslog", commitsLogHandler(db))
+	e.GET("/commitlog", commitLogHandler(db))
 
 	return e.Start(":" + viper.GetString("port"))
 }
