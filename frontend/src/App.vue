@@ -1,7 +1,7 @@
 <template>
   <div>
     <Header />
-    <CommitLog :commits="commits" />
+    <CommitLog class="pt-32 sm:pt-40" :commits="commits" />
   </div>
 </template>
 
