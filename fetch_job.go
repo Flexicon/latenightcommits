@@ -27,6 +27,8 @@ var (
 )
 
 func runFetchJob(db *gorm.DB) error {
+	log.Println("Running fetch_job...")
+
 	results, err := searchSketchyCommits()
 	if err != nil {
 		return err
