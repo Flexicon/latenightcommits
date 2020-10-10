@@ -20,10 +20,13 @@ func commitLogHandler(db *gorm.DB) echo.HandlerFunc {
 			page = 1
 		}
 
-		limit := 10
-		offset := (page - 1) * limit
+		limit, _ := strconv.Atoi(c.QueryParam("per_page"))
+		if limit < 1 {
+			limit = 20
+		}
 
 		var commits []*Commit
+		offset := (page - 1) * limit
 		db.Order("created_at desc").Limit(limit).Offset(offset).Find(&commits)
 
 		return c.JSON(http.StatusOK, CommitLogResponse{
