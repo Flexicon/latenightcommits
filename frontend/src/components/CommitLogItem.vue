@@ -1,5 +1,5 @@
 <template>
-  <li class="commit-entry flex items-center py-2">
+  <li class="commit-entry flex items-center py-3">
     <div class="w-24 flex-shrink-0 sm:w-auto sm:flex sm:items-center">
       <component
         :is="author ? 'a' : 'div'"
