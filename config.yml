@@ -3,3 +3,7 @@ debug: true
 
 database:
   url: 'root:dev@(localhost)/latenightcommits?charset=utf8&parseTime=True&loc=Local'
+
+github:
+  user: flexicon
+  token: ""
