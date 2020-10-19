@@ -1,18 +1,32 @@
 <template>
-  <li class="commit-entry flex items-center py-3">
+  <li
+    class="commit-entry flex items-center p-3 pr-0 bg-gray-100 hover:bg-gray-200"
+  >
     <div class="w-24 flex-shrink-0 sm:w-auto sm:flex sm:items-center">
       <component
         :is="author ? 'a' : 'div'"
         class="hover:opacity-75 sm:w-24 sm:flex-shrink-0"
-        :href="`https://github.com/${author}`"
+        :href="authorLink"
         rel="noreferrer noopener"
         target="_blank"
       >
-        <img :src="displayImage" :alt="`${displayName} avatar`" :class="{ 'bg-gray-100': !avatar_url }" />
+        <img
+          :src="displayImage"
+          :alt="`${displayName} avatar`"
+          :class="{ 'bg-gray-100': !avatar_url }"
+        />
       </component>
 
       <div class="p-1 sm:px-5 text-2xs text-center">
-        <div>{{ displayName }}</div>
+        <component
+          :is="author ? 'a' : 'div'"
+          class="hover:underline block"
+          :href="authorLink"
+          rel="noreferrer noopener"
+          target="_blank"
+        >
+          {{ displayName }}
+        </component>
         <small>{{ created_at }}</small>
       </div>
     </div>
@@ -45,10 +59,10 @@ export default {
       return this.author || '[REDACTED]';
     },
     displayImage() {
-      return (
-        this.avatar_url ||
-        require('@/assets/redacted_user.svg')
-      );
+      return this.avatar_url || require('@/assets/redacted_user.svg');
+    },
+    authorLink() {
+      return `https://github.com/${this.author}`;
     },
     trimmedMessage() {
       const maxLength = 120;
