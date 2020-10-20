@@ -14,6 +14,9 @@ module.exports = {
         '2xs': '.625rem',
       },
       spacing: {
+        21: '5.25rem',
+        22: '5.5rem',
+        23: '5.75rem',
         36: '9rem',
       },
     },

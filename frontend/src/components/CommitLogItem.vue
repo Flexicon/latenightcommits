@@ -2,10 +2,10 @@
   <li
     class="commit-entry flex items-center p-3 pr-0 bg-gray-100 hover:bg-gray-200"
   >
-    <div class="w-24 flex-shrink-0 sm:w-auto sm:flex sm:items-center">
+    <div class="w-24 flex-shrink-0">
       <component
         :is="author ? 'a' : 'div'"
-        class="hover:opacity-75 sm:w-24 sm:flex-shrink-0"
+        class="hover:opacity-75"
         :href="authorLink"
         rel="noreferrer noopener"
         target="_blank"
@@ -13,15 +13,16 @@
         <img
           :src="displayImage"
           :alt="`${displayName} avatar`"
-          :class="{ 'bg-gray-100': !avatar_url }"
+          :class="{ 'bg-gray-200': !avatar_url }"
         />
       </component>
 
-      <div class="p-1 sm:px-5 text-2xs text-center">
+      <div class="p-1 text-2xs text-center">
         <component
           :is="author ? 'a' : 'div'"
-          class="hover:underline block"
+          class="hover:underline block w-23 truncate"
           :href="authorLink"
+          :title="author"
           rel="noreferrer noopener"
           target="_blank"
         >
@@ -31,7 +32,7 @@
       </div>
     </div>
 
-    <div class="p-3 font-mono text-sm sm:text-base">
+    <div class="p-4 sm:px-8 font-mono text-sm sm:text-base">
       <a
         class="hover:underline"
         :href="link"
