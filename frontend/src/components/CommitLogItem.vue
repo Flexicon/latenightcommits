@@ -11,7 +11,7 @@
       </a>
     </div>
 
-    <div class="flex items-center mt-3">
+    <div class="flex flex-col-reverse sm:flex-row sm:items-center mt-3">
       <component
         :is="author ? 'a' : 'div'"
         class="flex items-center"
@@ -33,7 +33,7 @@
         </span>
       </component>
 
-      <div class="ml-2 text-xs text-gray-500">{{ relativeTimestamp }}</div>
+      <div class="mb-1 sm:mb-0 sm:ml-2 text-2xs sm:text-xs text-gray-500">{{ relativeTimestamp }}</div>
     </div>
   </li>
 </template>
