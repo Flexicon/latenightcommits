@@ -1,7 +1,7 @@
 <template>
   <div>
     <Header />
-    <CommitLog class="pt-32 sm:pt-40" :commits="commits" :busy="busy" />
+    <CommitLog :commits="commits" :busy="busy" />
   </div>
 </template>
 
@@ -52,3 +52,10 @@ export default {
   },
 };
 </script>
+
+<style>
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #374d78;
+}
+</style>

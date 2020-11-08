@@ -1,5 +1,5 @@
 <template>
-  <div class="animate-spin h-5 w-5">
+  <div class="spinner animate-spin h-5 w-5 text-gray-100">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
@@ -7,6 +7,7 @@
       stroke="currentColor"
     >
       <path
+        color="inherit"
         stroke-linecap="round"
         stroke-linejoin="round"
         stroke-width="2"
@@ -15,3 +16,9 @@
     </svg>
   </div>
 </template>
+
+<style scoped>
+.spinner > svg {
+  transform: scaleX(-1);
+}
+</style>

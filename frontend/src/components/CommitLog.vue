@@ -1,6 +1,6 @@
 <template>
   <div class="m-auto lg:max-w-4xl px-4 lg:px-0">
-    <ul id="commits-log" class="divide-y divide-orange-300">
+    <ul id="commits-log">
       <CommitLogItem
         v-for="commit in commits"
         :key="commit.id"

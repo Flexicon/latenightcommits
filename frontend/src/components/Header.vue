@@ -1,13 +1,13 @@
 <template>
-  <div class="bg-white shadow-md fixed w-full">
-    <div class="m-auto py-5 px-4 mb-2 font-serif lg:max-w-4xl lg:px-0">
-      <h1 class="text-2xl sm:text-5xl">🍺 Late Night Commits</h1>
-      <p class="text-sm sm:text-base text-gray-600">
+  <div class="w-full text-white">
+    <div class="m-auto pt-5 pb-10 px-4 lg:max-w-4xl lg:px-0">
+      <h1 class="text-2xl sm:text-4xl mb-2 font-medium">🍺 Late Night Commits</h1>
+      <p class="text-sm italic text-gray-300">
         When the pressures of being 10x just overwhelm you
       </p>
     </div>
     <a
-      class="block absolute right-0 top-0 py-1 px-2 text-2xs text-gray-500 bg-gray-200 hover:underline hover:text-gray-700 hover:bg-gray-300"
+      class="block absolute right-0 top-0 p-2 text-xs sm:text-sm text-gray-500 underline hover:text-gray-100"
       href="http://www.commitlogsfromlastnight.com/"
       rel="noreferrer noopener"
       target="_blank"
