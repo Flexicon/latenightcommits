@@ -54,7 +54,7 @@ export default {
 </script>
 
 <style>
-body {
+body, html {
   font-family: 'Roboto', sans-serif;
   background-color: #374d78;
 }
