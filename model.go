@@ -35,12 +35,17 @@ type SearchResultItem struct {
 
 // ParseCommitDate and return a valid time struct
 func (item *SearchResultItem) ParseCommitDate() (time.Time, error) {
-	layout := "2006-01-02T15:04:05.000"
+	layout := "2006-01-02T15:04:05.000-07:00"
+
+	// Account for Zulu time dates
+	if len(item.Commit.CommitAuthor.Date) == 24 && item.Commit.CommitAuthor.Date[23] == 'Z' {
+		item.Commit.CommitAuthor.Date = item.Commit.CommitAuthor.Date[:23] + "+00:00"
+	}
 
 	createdAt, err := time.Parse(layout, item.Commit.CommitAuthor.Date[:len(layout)])
 	if err != nil {
 		return time.Time{}, err
 	}
 
-	return createdAt, nil
+	return createdAt.UTC(), nil
 }
