@@ -28,18 +28,23 @@
           :class="{ 'bg-gray-200': !avatar_url }"
         />
 
-        <span class="ml-2 text-sm">
+        <span class="ml-2 text-xs sm:text-sm">
           {{ displayName }}
         </span>
       </component>
 
-      <div class="mb-1 sm:mb-0 sm:ml-2 text-2xs sm:text-xs text-gray-500">{{ relativeTimestamp }}</div>
+      <div
+        class="mb-1 sm:mb-0 sm:ml-1 text-2xs sm:text-sm text-gray-500"
+        :title="timestamp"
+      >
+        {{ relativeTimestamp }}
+      </div>
     </div>
   </li>
 </template>
 
 <script>
-import { format, differenceInMinutes } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns/esm';
 
 export default {
   props: {
@@ -68,13 +73,12 @@ export default {
         : this.message;
     },
     relativeTimestamp() {
-      const createdDate = new Date(this.created_at);
-      const diffHours = differenceInMinutes(createdDate, new Date());
-
-      // TODO: check difference for commits made less than an hour ago and format them differently
-      console.log(diffHours);
-
-      return format(createdDate, 'LLLL d, yyyy hh:mm a');
+      return formatDistanceToNow(new Date(this.created_at), {
+        addSuffix: true,
+      });
+    },
+    timestamp() {
+      return format(new Date(this.created_at), 'LLLL d, yyyy hh:mm a');
     },
   },
 };
