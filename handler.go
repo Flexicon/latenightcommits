@@ -93,8 +93,9 @@ func statsHandler(db *gorm.DB) echo.HandlerFunc {
 		// Prepare data to fit into chart
 		dates := make([]string, 0)
 		data := make([]opts.BarData, 0)
-
-		for _, row := range StatsCache {
+		// Loop through stats in reverse order since we want to display the date ascending from right to left
+		for i := len(StatsCache) - 1; i >= 0; i-- {
+			row := StatsCache[i]
 			dates = append(dates, row.Date.Format("2006/01/02"))
 			data = append(data, opts.BarData{Value: row.Count})
 		}
