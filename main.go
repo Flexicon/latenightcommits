@@ -51,7 +51,9 @@ func runWebApp(db *gorm.DB) error {
 		Format: "REQUEST: method=${method}, status=${status}, uri=${uri}, latency=${latency_human}\n",
 	}))
 
+	e.GET("", indexHandler(e))
 	e.GET("/commitlog", commitLogHandler(db))
+	e.GET("/stats", statsHandler(db))
 
 	return e.Start(":" + viper.GetString("port"))
 }
