@@ -22,7 +22,7 @@
         target="_blank"
       >
         <img
-          class="block w-6 rounded-full"
+          class="block w-6 h-6 rounded-full"
           :src="displayImage"
           :alt="`${displayName} avatar`"
           :class="{ 'bg-gray-200': !avatar_url }"
