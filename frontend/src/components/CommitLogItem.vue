@@ -1,5 +1,5 @@
 <template>
-  <li class="commit-entry py-5 px-6 bg-white mb-4 rounded-xl">
+  <li class="commit-entry py-5 px-6 bg-white mb-4 rounded-xl overflow-hidden">
     <div class="font-mono text-sm sm:text-base">
       <a
         class="hover:underline"
