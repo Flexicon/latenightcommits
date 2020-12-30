@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"net/url"
@@ -86,7 +87,7 @@ func searchCommits(query string, page int) ([]SearchResultItem, error) {
 	params.Add("sort", "author-date")
 	params.Add("order", "desc")
 	params.Add("per_page", "100")
-	params.Add("page", string(page))
+	params.Add("page", fmt.Sprint(page))
 
 	searchURL, _ := url.Parse("https://api.github.com/search/commits")
 	searchURL.RawQuery = params.Encode()
