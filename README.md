@@ -7,3 +7,7 @@ _When the pressures of being 10x just overwhelm you_
 Based on [githubocto/repo-visualizer](https://octo.github.com/projects/repo-visualization).
 
 ![diagram](./diagram.svg)
+
+### Useful Links
+
+- [GoatCounter](https://latenightcommits.goatcounter.com/)
