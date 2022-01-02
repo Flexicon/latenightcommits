@@ -8,7 +8,7 @@
     </div>
     <a
       class="block absolute right-0 top-0 p-2 text-xs sm:text-sm text-gray-500 underline hover:text-gray-100"
-      href="http://www.commitlogsfromlastnight.com/"
+      href="https://web.archive.org/web/20210416163007/http://www.commitlogsfromlastnight.com/"
       rel="noreferrer noopener"
       target="_blank"
     >
