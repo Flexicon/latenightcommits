@@ -2,7 +2,7 @@
   "cron": [
     {
       "command": "latenightcommits -mode=fetch",
-      "schedule": "*/30 * * * *"
+      "schedule": "*/15 * * * *"
     }
   ]
 }
