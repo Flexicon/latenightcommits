@@ -1,8 +1,0 @@
-{
-  "cron": [
-    {
-      "command": "latenightcommits -mode=fetch",
-      "schedule": "*/15 * * * *"
-    }
-  ]
-}
