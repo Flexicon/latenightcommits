@@ -48,7 +48,9 @@ func SetupDB() (*gorm.DB, error) {
 	}
 
 	// Migrate the schema
-	db.AutoMigrate(&Commit{})
+	if err := db.AutoMigrate(&Commit{}); err != nil {
+		return nil, errors.Wrap(err, "failed to migrate database schema")
+	}
 
 	return db, nil
 }
