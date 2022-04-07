@@ -1,10 +1,25 @@
-version: '2'
+version: '3'
 
 services:
+  api:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PORT: 9000
+      DATABASE_URL: "root:dev@(db)/latenightcommits?charset=utf8mb4&parseTime=True&loc=Local"
+    ports:
+      - 9000:9000
+
   db:
-    image: mysql:8
+    image: mariadb:10
     environment:
       MYSQL_DATABASE: latenightcommits
       MYSQL_ROOT_PASSWORD: dev
+    healthcheck:
+      interval: 2s
+      retries: 30
+      test: "echo 'SELECT 1' | mysql --silent -u root --password=dev"
     ports:
       - 3306:3306

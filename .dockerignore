@@ -1,0 +1,12 @@
+.git
+.gitignore
+
+CHECKS
+Dockerfile
+Makefile
+modd.conf
+tmp
+
+config.yml
+diagram.svg
+README.md
