@@ -49,3 +49,16 @@ func (item *SearchResultItem) ParseCommitDate() (time.Time, error) {
 
 	return createdAt.UTC(), nil
 }
+
+// isDateToday returns true if the date is today.
+func isDateToday(date time.Time) bool {
+	y1, m1, d1 := date.UTC().Date()
+	y2, m2, d2 := time.Now().UTC().Date()
+
+	return y1 == y2 && m1 == m2 && d1 == d2
+}
+
+// isDateInTheFuture returns true if the date is in the future.
+func isDateInTheFuture(date time.Time) bool {
+	return date.UTC().After(time.Now().UTC())
+}

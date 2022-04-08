@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"time"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
@@ -139,6 +138,10 @@ func buildCommitLogFromResults(results []SearchResultItem) ([]*Commit, error) {
 		if !isDateToday(commitDate) {
 			continue
 		}
+		// Ignore commits from the future 🧙‍♂️
+		if isDateInTheFuture(commitDate) {
+			continue
+		}
 
 		c := &Commit{
 			ID:        item.SHA,
@@ -170,11 +173,4 @@ func saveCommitLog(db *gorm.DB, commits []*Commit) error {
 	log.Printf("Saving %d commits", len(commits))
 
 	return db.Clauses(clause.OnConflict{DoNothing: true}).Create(commits).Error
-}
-
-func isDateToday(date time.Time) bool {
-	y1, m1, d1 := date.Date()
-	y2, m2, d2 := time.Now().UTC().Date()
-
-	return y1 == y2 && m1 == m2 && d1 == d2
 }
