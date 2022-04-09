@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/go-echarts/go-echarts/v2/charts"
+	"github.com/go-echarts/go-echarts/v2/components"
 	"github.com/go-echarts/go-echarts/v2/opts"
 	"github.com/go-echarts/go-echarts/v2/types"
 	"github.com/labstack/echo/v4"
@@ -50,44 +52,62 @@ func commitLogHandler(db *gorm.DB) echo.HandlerFunc {
 }
 
 func statsHandler(db *gorm.DB) echo.HandlerFunc {
-	type Results struct {
+	type DailyStatsResults struct {
 		Count int64
 		Date  time.Time
 	}
-	var StatsCache []*Results
+
+	type CachedStats struct {
+		TotalCommits int64
+		DailyStats   []*DailyStatsResults
+	}
+
+	var statsCache *CachedStats
 	// Clear cache every 5 minutes
 	go func() {
 		for range time.Tick(5 * time.Minute) {
-			StatsCache = nil
+			statsCache = nil
 		}
 	}()
 
 	return func(c echo.Context) error {
-		if StatsCache == nil {
-			err := db.Session(&gorm.Session{PrepareStmt: true}).
+		// If cache is empty, perform data fetching
+		if statsCache == nil {
+			statsCache = &CachedStats{}
+			dbSession := db.Session(&gorm.Session{PrepareStmt: true})
+
+			err := dbSession.
 				Raw(`
 					SELECT COUNT(id) as 'count', DATE(created_at) as 'date'
 					FROM commits
 					GROUP BY date
 					ORDER BY date DESC
 					LIMIT 7;
-				`).Scan(&StatsCache).Error
-
+				`).Scan(&statsCache.DailyStats).Error
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "failed to retrieve stats")
 			}
+
+			err = dbSession.Raw(`SELECT COUNT(id) FROM commits;`).Scan(&statsCache.TotalCommits).Error
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "failed to retrieve stats total")
+			}
 		}
 
-		// Prep chart
-		bar := charts.NewBar()
-		bar.SetGlobalOptions(
+		// Setup global chart options
+		globalOpts := charts.WithInitializationOpts(opts.Initialization{
+			Theme: types.ThemeWesteros,
+		})
+
+		// Prep dates stats chart
+		datesChart := charts.NewBar()
+		datesChart.SetGlobalOptions(globalOpts,
 			charts.WithTitleOpts(opts.Title{
-				Title:    "Commit Stats",
-				Subtitle: "🤓 total commits added each day over the last 7 days",
-			}),
-			charts.WithInitializationOpts(opts.Initialization{
-				PageTitle: "Stats | LateNightCommits",
-				Theme:     types.ThemeWesteros,
+				Title: "Commit Stats by date",
+				Subtitle: fmt.Sprintf(
+					"🤓 total commits added each day over the last 7 days - out of %s in total",
+					formatNumber(statsCache.TotalCommits),
+				),
 			}),
 			charts.WithTooltipOpts(opts.Tooltip{Show: true}),
 		)
@@ -96,14 +116,19 @@ func statsHandler(db *gorm.DB) echo.HandlerFunc {
 		dates := make([]string, 0)
 		data := make([]opts.BarData, 0)
 		// Loop through stats in reverse order since we want to display the date ascending from right to left
-		for i := len(StatsCache) - 1; i >= 0; i-- {
-			row := StatsCache[i]
+		for i := len(statsCache.DailyStats) - 1; i >= 0; i-- {
+			row := statsCache.DailyStats[i]
 			dates = append(dates, row.Date.Format("2006/01/02"))
 			data = append(data, opts.BarData{Value: row.Count})
 		}
-		// Put data into chart
-		bar.SetXAxis(dates).AddSeries("Commits on date", data)
+		// Put dates data into chart
+		datesChart.SetXAxis(dates).AddSeries("Commits on date", data)
 
-		return bar.Render(c.Response())
+		// Setup page to hold all charts
+		page := components.NewPage()
+		page.PageTitle = "Stats | LateNightCommits"
+		page.AddCharts(datesChart)
+
+		return page.Render(c.Response())
 	}
 }
