@@ -2,6 +2,9 @@ package main
 
 import (
 	"time"
+
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 )
 
 // SearchResults for the Github search commits API
@@ -61,4 +64,11 @@ func isDateToday(date time.Time) bool {
 // isDateInTheFuture returns true if the date is in the future.
 func isDateInTheFuture(date time.Time) bool {
 	return date.UTC().After(time.Now().UTC())
+}
+
+// formatNumber returns a formatted string representation of the given number.
+//
+// Example: formatNumber(2499) == "2,499"
+func formatNumber(n int64) string {
+	return message.NewPrinter(language.English).Sprintf("%d", n)
 }
