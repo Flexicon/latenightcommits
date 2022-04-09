@@ -12,6 +12,10 @@ import (
 	"github.com/go-echarts/go-echarts/v2/types"
 )
 
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
+
 // Initialization contains options for the canvas.
 type Initialization struct {
 	// HTML title
@@ -73,29 +77,24 @@ func setField(field reflect.Value, defaultVal string) {
 }
 
 const (
-	letterBytes   = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	letterIdxBits = 6                    // 6 bits to represent a letter index
-	letterIdxMask = 1<<letterIdxBits - 1 // All 1-bits, as many as letterIdxBits
-	letterIdxMax  = 63 / letterIdxBits   // # of letter indices fitting in 63 bits
-	chartIDSize   = 12
+	chartIDSize = 12
 )
 
 // generate the unique ID for each chart.
 func generateUniqueID() string {
-	seed := rand.NewSource(time.Now().UnixNano())
-	b := make([]byte, chartIDSize)
-	for i, cache, remain := chartIDSize-1, seed.Int63(), letterIdxMax; i >= 0; {
-		if remain == 0 {
-			cache, remain = seed.Int63(), letterIdxMax
-		}
-		if idx := int(cache & letterIdxMask); idx < len(letterBytes) {
-			b[i] = letterBytes[idx]
-			i--
-		}
-		cache >>= letterIdxBits
-		remain--
+	var b [chartIDSize]byte
+	for i := range b {
+		b[i] = randByte()
 	}
-	return string(b)
+	return string(b[:])
+}
+
+func randByte() byte {
+	c := 65 // A
+	if rand.Intn(10) > 5 {
+		c = 97 // a
+	}
+	return byte(c + rand.Intn(26))
 }
 
 // Title is the option set for a title component.
@@ -254,6 +253,7 @@ type Legend struct {
 }
 
 // Tooltip is the option set for a tooltip component.
+// https://echarts.apache.org/en/option.html#tooltip
 type Tooltip struct {
 	// Whether to show the tooltip component, including tooltip floating layer and axisPointer.
 	Show bool `json:"show"`
@@ -332,6 +332,26 @@ type Tooltip struct {
 	//    percent: number,
 	// }
 	Formatter string `json:"formatter,omitempty"`
+
+	// Configuration item for axisPointer
+	AxisPointer *AxisPointer `json:"axisPointer,omitempty"`
+}
+
+// AxisPointer is the option set for an axisPointer component
+// https://echarts.apache.org/en/option.html#axisPointer
+type AxisPointer struct {
+
+	// Indicator type.
+	// Options:
+	//   - 'line' line indicator.
+	//   - 'shadow' shadow crosshair indicator.
+	//   - 'none' no indicator displayed.
+	//   - 'cross' crosshair indicator, which is actually the shortcut of enable two axisPointers of two orthometric axes.
+	Type string `json:"type,omitempty"`
+
+	// 	Whether snap to point automatically. The default value is auto determined.
+	// This feature usually makes sense in value axis and time axis, where tiny points can be seeked automatically.
+	Snap bool `json:"snap,omitempty"`
 }
 
 // Toolbox is the option set for a toolbox component.
@@ -457,6 +477,13 @@ type AxisLabel struct {
 	// Set this to false to prevent the axis label from appearing.
 	Show bool `json:"show,omitempty"`
 
+	// Interval of Axis label, which is available in category axis.
+	// It uses a strategy that labels do not overlap by default.
+	// You may set it to be 0 to display all labels compulsively.
+	// If it is set to be 1, it means that labels are shown once after one label.
+	// And if it is set to be 2, it means labels are shown once after two labels, and so on.
+	Interval string `json:"interval,omitempty"`
+
 	// Set this to true so the axis labels face the inside direction.
 	Inside bool `json:"inside,omitempty"`
 
@@ -466,13 +493,6 @@ type AxisLabel struct {
 
 	// The margin between the axis label and the axis line.
 	Margin float64 `json:"margin,omitempty"`
-
-	// Interval of Axis label, which is available in category axis.
-	// It uses a strategy that labels do not overlap by default.
-	// You may set it to be 0 to display all labels compulsively.
-	// If it is set to be 1, it means that labels are shown once after one label.
-	// And if it is set to be 2, it means labels are shown once after two labels, and so on.
-	Interval string `json:"interval,omitempty"`
 
 	// Formatter of axis label, which supports string template and callback function.
 	//
@@ -495,6 +515,9 @@ type AxisLabel struct {
 	//}
 	Formatter string `json:"formatter,omitempty"`
 
+	ShowMinLabel bool `json:"showMinLabel"`
+	ShowMaxLabel bool `json:"showMaxLabel"`
+
 	// Color of axis label is set to be axisLine.lineStyle.color by default. Callback function is supported,
 	// in the following format:
 	//
@@ -507,6 +530,21 @@ type AxisLabel struct {
 	//    }
 	// }
 	Color string `json:"color,omitempty"`
+
+	// axis label font style
+	FontStyle string `json:"fontStyle,omitempty"`
+	// axis label font weight
+	FontWeight string `json:"fontWeight,omitempty"`
+	// axis label font family
+	FontFamily string `json:"fontFamily,omitempty"`
+	// axis label font size
+	FontSize string `json:"fontSize,omitempty"`
+	// Horizontal alignment of axis label
+	Align string `json:"align,omitempty"`
+	// Vertical alignment of axis label
+	VerticalAlign string `json:"verticalAlign,omitempty"`
+	// Line height of the axis label
+	LineHeight string `json:"lineHeight,omitempty"`
 }
 
 // XAxis is the option set for X axis.
@@ -916,6 +954,49 @@ type ParallelAxis struct {
 	Data interface{} `json:"data,omitempty"`
 }
 
+// Polar Bar options
+type Polar struct {
+	ID      string    `json:"id,omitempty"`
+	Zlevel  int       `json:"zlevel,omitempty"`
+	Z       int       `json:"z,omitempty"`
+	Center  [2]string `json:"center,omitempty"`
+	Radius  [2]string `json:"radius,omitempty"`
+	Tooltip Tooltip   `json:"tooltip,omitempty"`
+}
+
+type PolarAxisBase struct {
+	ID           string  `json:"id,omitempty"`
+	PolarIndex   int     `json:"polarIndex,omitempty"`
+	StartAngle   float64 `json:"startAngle,omitempty"`
+	Type         string  `json:"type,omitempty"`
+	BoundaryGap  bool    `json:"boundaryGap,omitempty"`
+	Min          float64 `json:"min,omitempty"`
+	Max          float64 `json:"max,omitempty"`
+	Scale        bool    `json:"scale,omitempty"`
+	SplitNumber  int     `json:"splitNumber,omitempty"`
+	MinInterval  float64 `json:"minInterval,omitempty"`
+	MaxInterval  float64 `json:"maxInterval,omitempty"`
+	Interval     float64 `json:"interval,omitempty"`
+	LogBase      float64 `json:"logBase,omitempty"`
+	Silent       bool    `json:"silent,omitempty"`
+	TriggerEvent bool    `json:"triggerEvent,omitempty"`
+}
+
+type AngleAxis struct {
+	PolarAxisBase
+	Clockwise bool `json:"clockwise,omitempty"`
+}
+
+type RadiusAxis struct {
+	PolarAxisBase
+	Name          string    `json:"name,omitempty"`
+	NameLocation  string    `json:"nameLocation,omitempty"`
+	NameTextStyle TextStyle `json:"nameTextStyle,omitempty"`
+	NameGap       float64   `json:"nameGap,omitempty"`
+	NameRadius    float64   `json:"nameRotate,omitempty"`
+	Inverse       bool      `json:"inverse,omitempty"`
+}
+
 var funcPat = regexp.MustCompile(`\n|\t`)
 
 const funcMarker = "__f__"
@@ -948,8 +1029,8 @@ type Assets struct {
 	JSAssets  types.OrderedSet
 	CSSAssets types.OrderedSet
 
-	customizedJSAssets  types.OrderedSet
-	customizedCSSAssets types.OrderedSet
+	CustomizedJSAssets  types.OrderedSet
+	CustomizedCSSAssets types.OrderedSet
 }
 
 // InitAssets inits the static assets storage.
@@ -957,21 +1038,21 @@ func (opt *Assets) InitAssets() {
 	opt.JSAssets.Init("echarts.min.js")
 	opt.CSSAssets.Init()
 
-	opt.customizedJSAssets.Init()
-	opt.customizedCSSAssets.Init()
+	opt.CustomizedJSAssets.Init()
+	opt.CustomizedCSSAssets.Init()
 }
 
 // AddCustomizedJSAssets adds the customized javascript assets which will not be added the `host` prefix.
 func (opt *Assets) AddCustomizedJSAssets(assets ...string) {
 	for i := 0; i < len(assets); i++ {
-		opt.customizedJSAssets.Add(assets[i])
+		opt.CustomizedJSAssets.Add(assets[i])
 	}
 }
 
 // AddCustomizedCSSAssets adds the customized css assets which will not be added the `host` prefix.
 func (opt *Assets) AddCustomizedCSSAssets(assets ...string) {
 	for i := 0; i < len(assets); i++ {
-		opt.customizedCSSAssets.Add(assets[i])
+		opt.CustomizedCSSAssets.Add(assets[i])
 	}
 }
 
@@ -983,18 +1064,10 @@ func (opt *Assets) Validate(host string) {
 		}
 	}
 
-	for _, v := range opt.customizedJSAssets.Values {
-		opt.JSAssets.Add(v)
-	}
-
 	for i := 0; i < len(opt.CSSAssets.Values); i++ {
 		if !strings.HasPrefix(opt.CSSAssets.Values[i], host) {
 			opt.CSSAssets.Values[i] = host + opt.CSSAssets.Values[i]
 		}
-	}
-
-	for _, v := range opt.customizedCSSAssets.Values {
-		opt.CSSAssets.Add(v)
 	}
 }
 

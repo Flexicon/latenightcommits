@@ -6,7 +6,7 @@ import "fmt"
 // https://echarts.apache.org/en/option.html#series-line.label
 type Label struct {
 	// Whether to show label.
-	Show bool `json:"show,omitempty"`
+	Show bool `json:"show"`
 
 	// Color is the text color.
 	// If set as "auto", the color will assigned as visual color, such as series color.
@@ -46,6 +46,22 @@ type Label struct {
 	// {@xxx}: the value of a dimension named"xxx", for example,{@product}refers the value of"product"` dimension.
 	// {@[n]}: the value of a dimension at the index ofn, for example,{@[3]}` refers the value at dimensions[3].
 	Formatter string `json:"formatter,omitempty"`
+}
+
+// LabelLine Configuration of label guide line.
+type LabelLine struct {
+	// Whether to show the label guide line.
+	Show bool `json:"show"`
+	// Whether to show the label guide line above the corresponding element.
+	ShowAbove bool `json:"showAbove"`
+	// The length of the second segment of guide line.
+	Length2 float64 `json:"length2,omitempty"`
+	// smoothness of guide line.
+	Smooth bool `json:"smooth"`
+	// Minimum turn angle between two segments of guide line
+	MinTurnAngle float64 `json:"minTurnAngle,omitempty"`
+	// The style of label line
+	LineStyle *LineStyle `json:"lineStyle,omitempty"`
 }
 
 // Emphasis is the style when it is highlighted, like being hovered by mouse, or highlighted via legend connect.
@@ -282,6 +298,21 @@ type GraphForce struct {
 	// value will be shorter, which means two nodes are closer. And edge with smaller value will be longer.
 	// default 30
 	EdgeLength float32 `json:"edgeLength,omitempty"`
+}
+
+// Leaf node special configuration, the leaf node and non-leaf node label location is different.
+type TreeLeaves struct {
+	// The style setting of the text label in a single bar.
+	Label *Label `json:"label,omitempty"`
+
+	// LineStyle settings in this series data.
+	LineStyle *LineStyle `json:"lineStyle,omitempty"`
+
+	// ItemStyle settings in this series data.
+	ItemStyle *ItemStyle `json:"itemStyle,omitempty"`
+
+	// Emphasis settings in this series data.
+	Emphasis *Emphasis `json:"emphasis,omitempty"`
 }
 
 // RGBColor returns the color with RGB format

@@ -14,6 +14,8 @@ type SingleSeries struct {
 	// Bar
 	BarGap         string `json:"barGap,omitempty"`
 	BarCategoryGap string `json:"barCategoryGap,omitempty"`
+	ShowBackground bool   `json:"showBackground,omitempty"`
+	RoundCap       bool   `json:"roundCap,omitempty"`
 
 	// Bar3D
 	Shading string `json:"shading,omitempty"`
@@ -47,10 +49,34 @@ type SingleSeries struct {
 	// Scatter
 	SymbolSize float32 `json:"symbolSize,omitempty"`
 
+	// Tree
+	Orient            string      `json:"orient,omitempty"`
+	ExpandAndCollapse bool        `json:"expandAndCollapse,omitempty"`
+	InitialTreeDepth  int         `json:"initialTreeDepth,omitempty"`
+	Leaves            interface{} `json:"leaves,omitempty"`
+	Left              string      `json:"left,omitempty"`
+	Right             string      `json:"right,omitempty"`
+	Top               string      `json:"top,omitempty"`
+	Bottom            string      `json:"bottom,omitempty"`
+
 	// WordCloud
 	Shape         string    `json:"shape,omitempty"`
 	SizeRange     []float32 `json:"sizeRange,omitempty"`
 	RotationRange []float32 `json:"rotationRange,omitempty"`
+
+	// Sunburst
+	NodeClick               string `json:"nodeClick,omitempty"`
+	Sort                    string `json:"sort,omitempty"`
+	RenderLabelForZeroData  bool   `json:"renderLabelForZeroData"`
+	SelectedMode            bool   `json:"selectedMode"`
+	Animation               bool   `json:"animation"`
+	AnimationThreshold      int    `json:"animationThreshold,omitempty"`
+	AnimationDuration       int    `json:"animationDuration,omitempty"`
+	AnimationEasing         string `json:"animationEasing,omitempty"`
+	AnimationDelay          int    `json:"animationDelay,omitempty"`
+	AnimationDurationUpdate int    `json:"animationDurationUpdate,omitempty"`
+	AnimationEasingUpdate   string `json:"animationEasingUpdate,omitempty"`
+	AnimationDelayUpdate    int    `json:"animationDelayUpdate,omitempty"`
 
 	// series data
 	Data interface{} `json:"data"`
@@ -58,6 +84,7 @@ type SingleSeries struct {
 	// series options
 	*opts.ItemStyle    `json:"itemStyle,omitempty"`
 	*opts.Label        `json:"label,omitempty"`
+	*opts.LabelLine    `json:"labelLine,omitempty"`
 	*opts.Emphasis     `json:"emphasis,omitempty"`
 	*opts.MarkLines    `json:"markLine,omitempty"`
 	*opts.MarkPoints   `json:"markPoint,omitempty"`
@@ -121,6 +148,27 @@ func WithBarChartOpts(opt opts.BarChart) SeriesOpts {
 		s.BarCategoryGap = opt.BarCategoryGap
 		s.XAxisIndex = opt.XAxisIndex
 		s.YAxisIndex = opt.YAxisIndex
+		s.ShowBackground = opt.ShowBackground
+		s.RoundCap = opt.RoundCap
+		s.CoordSystem = opt.CoordSystem
+		s.Type = opt.Type
+	}
+}
+
+func WithSunburstOpts(opt opts.SunburstChart) SeriesOpts {
+	return func(s *SingleSeries) {
+		s.NodeClick = opt.NodeClick
+		s.Sort = opt.Sort
+		s.RenderLabelForZeroData = opt.RenderLabelForZeroData
+		s.SelectedMode = opt.SelectedMode
+		s.Animation = opt.Animation
+		s.AnimationThreshold = opt.AnimationThreshold
+		s.AnimationDuration = opt.AnimationDuration
+		s.AnimationEasing = opt.AnimationEasing
+		s.AnimationDelay = opt.AnimationDelay
+		s.AnimationDurationUpdate = opt.AnimationDurationUpdate
+		s.AnimationEasingUpdate = opt.AnimationEasingUpdate
+		s.AnimationDelayUpdate = opt.AnimationDelayUpdate
 	}
 }
 
@@ -186,6 +234,23 @@ func WithLiquidChartOpts(opt opts.LiquidChart) SeriesOpts {
 func WithBar3DChartOpts(opt opts.Bar3DChart) SeriesOpts {
 	return func(s *SingleSeries) {
 		s.Shading = opt.Shading
+	}
+}
+
+// WithTreeOpts
+func WithTreeOpts(opt opts.TreeChart) SeriesOpts {
+	return func(s *SingleSeries) {
+		s.Layout = opt.Layout
+		s.Orient = opt.Orient
+		s.ExpandAndCollapse = opt.ExpandAndCollapse
+		s.InitialTreeDepth = opt.InitialTreeDepth
+		s.Roam = opt.Roam
+		s.Label = opt.Label
+		s.Leaves = opt.Leaves
+		s.Right = opt.Right
+		s.Left = opt.Left
+		s.Top = opt.Top
+		s.Bottom = opt.Bottom
 	}
 }
 
@@ -278,7 +343,11 @@ func (s *SingleSeries) configureSeriesOpts(options ...SeriesOpts) {
 // MultiSeries represents multiple series.
 type MultiSeries []SingleSeries
 
-// SetSeriesOptions sets options for the series.
+// SetSeriesOptions sets options for all the series.
+// Previous options will be overwrote every time hence setting them on the `AddSeries` if you want
+// to customize each series individually
+// 															 here -> ↓ <-
+// func (c *Bar) AddSeries(name string, data []opts.BarData, options ...SeriesOpts)
 func (ms *MultiSeries) SetSeriesOptions(opts ...SeriesOpts) {
 	s := *ms
 	for i := 0; i < len(s); i++ {
