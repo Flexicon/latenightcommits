@@ -39,6 +39,9 @@ func commitLogHandler(db *gorm.DB) echo.HandlerFunc {
 		if limit < 1 {
 			limit = 20
 		}
+		if limit > 1000 {
+			limit = 1000
+		}
 
 		var commits []*Commit
 		offset := (page - 1) * limit
