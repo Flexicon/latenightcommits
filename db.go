@@ -2,12 +2,15 @@ package main
 
 import (
 	"encoding/json"
+	"log"
+	"os"
 	"time"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 // Commit model
@@ -38,7 +41,9 @@ func (c *Commit) PrintCreatedAt() string {
 
 // SetupDB and return active connection
 func SetupDB() (*gorm.DB, error) {
-	db, err := gorm.Open(mysql.Open(viper.GetString("database.url")), &gorm.Config{})
+	cfg := &gorm.Config{Logger: dbLogger()}
+
+	db, err := gorm.Open(mysql.Open(viper.GetString("database.url")), cfg)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to connect to database")
 	}
@@ -53,4 +58,13 @@ func SetupDB() (*gorm.DB, error) {
 	}
 
 	return db, nil
+}
+
+func dbLogger() logger.Interface {
+	return logger.New(log.New(os.Stdout, "\r\n", log.LstdFlags), logger.Config{
+		SlowThreshold:             time.Second,
+		LogLevel:                  logger.Warn,
+		IgnoreRecordNotFoundError: false,
+		Colorful:                  true,
+	})
 }
