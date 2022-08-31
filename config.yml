@@ -1,5 +1,5 @@
 port: 9000
-debug: true
+debug: false
 
 database:
   url: 'root:dev@(localhost)/latenightcommits?charset=utf8mb4&parseTime=True&loc=Local'
