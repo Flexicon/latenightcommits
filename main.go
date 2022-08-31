@@ -26,6 +26,10 @@ func run() error {
 		return err
 	}
 
+	if viper.GetBool("debug") {
+		log.Printf("💣 Running in debug mode")
+	}
+
 	db, err := SetupDB()
 	if err != nil {
 		return err
