@@ -47,27 +47,14 @@ func runFetchJob(db *gorm.DB) error {
 
 func searchSketchyCommits() ([]SearchResultItem, error) {
 	var results []SearchResultItem
-	resultsCh := make(chan []SearchResultItem)
-	errCh := make(chan error)
 
-	// Concurrently search for each keyword query
+	// Note: don't perform this search concurrently - GitHub does NOT like that.
 	for _, query := range QueryKeywords {
-		go func(q string) {
-			res, err := searchCommits(q, 1)
-			if err != nil {
-				errCh <- err
-			}
-			resultsCh <- res
-		}(query)
-	}
-
-	for range QueryKeywords {
-		select {
-		case res := <-resultsCh:
-			results = append(results, res...)
-		case err := <-errCh:
+		res, err := searchCommits(query, 1)
+		if err != nil {
 			return nil, err
 		}
+		results = append(results, res...)
 	}
 
 	log.Printf("Found %d commits total", len(results))
@@ -101,6 +88,13 @@ func searchCommits(query string, page int) ([]SearchResultItem, error) {
 		return nil, errors.Wrap(err, "failed to make github api request")
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		if isSecondaryRateLimitReached(resp) {
+			log.Println("Secondary rate limit reached - making too many requests concurrently")
+		}
+		return nil, fmt.Errorf("%s: github api response", resp.Status)
+	}
 
 	var results *SearchResults
 	err = json.NewDecoder(resp.Body).Decode(&results)
@@ -173,4 +167,8 @@ func saveCommitLog(db *gorm.DB, commits []*Commit) error {
 	log.Printf("Saving %d commits", len(commits))
 
 	return db.Clauses(clause.OnConflict{DoNothing: true}).Create(commits).Error
+}
+
+func isSecondaryRateLimitReached(res *http.Response) bool {
+	return res.StatusCode == 403 && res.Header.Get("X-Ratelimit-Remaining") != "0"
 }
