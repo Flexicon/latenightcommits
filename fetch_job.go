@@ -46,9 +46,19 @@ func runFetchJob(db *gorm.DB) error {
 
 func searchSketchyCommits() ([]SearchResultItem, error) {
 	// Note: don't perform this search concurrently - GitHub does NOT like that.
-	results, err := searchCommits(strings.Join(QueryKeywords, " OR "), 1)
-	if err != nil {
-		return nil, err
+	var results []SearchResultItem
+
+	for i, q := range QueryKeywords {
+		r, err := searchCommits(q, 1)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, r...)
+
+		if i < len(QueryKeywords)-1 {
+			// Wait a bit in between queries - GitHub secondary rate limiting is strict.
+			time.Sleep(10 * time.Second)
+		}
 	}
 
 	log.Printf("Found %d commits total", len(results))
@@ -57,7 +67,7 @@ func searchSketchyCommits() ([]SearchResultItem, error) {
 }
 
 func searchCommits(query string, page int) ([]SearchResultItem, error) {
-	log.Printf("Searching commits for: '%s' - page %d", query, page)
+	log.Printf("Looking up sketchy commits: '%s' - page %d", query, page)
 
 	ghUser := viper.GetString("github.user")
 	ghToken := viper.GetString("github.token")
