@@ -19,7 +19,7 @@ const (
 	// CommitMessageMax is the maximum amount of characters of a commit message that we want to save before truncating
 	CommitMessageMax = 180
 	// SearchPageDepth determines how deep to look into the search results
-	SearchPageDepth = 5
+	SearchPageDepth = 3
 )
 
 var (
