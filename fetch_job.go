@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
@@ -104,6 +105,9 @@ func searchCommits(query string, page int) ([]SearchResultItem, error) {
 
 	// Recursively search for commits up to the set max page depth
 	if len(results.Items) < results.TotalCount && page < SearchPageDepth {
+		// Wait a second before searching again - GitHub doesn't like rapid fire search requests now
+		time.Sleep(1 * time.Second)
+
 		items, err := searchCommits(query, page+1)
 		if err != nil {
 			return nil, err
