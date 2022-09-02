@@ -86,3 +86,9 @@ func ViperInit() error {
 
 	return nil
 }
+
+func debugLog(msg string) {
+	if viper.GetBool("debug") {
+		log.Printf("[DEBUG] %s", msg)
+	}
+}

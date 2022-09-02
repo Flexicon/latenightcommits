@@ -19,7 +19,7 @@ const (
 	// CommitMessageMax is the maximum amount of characters of a commit message that we want to save before truncating
 	CommitMessageMax = 180
 	// SearchPageDepth determines how deep to look into the search results
-	SearchPageDepth = 3
+	SearchPageDepth = 5
 )
 
 var (
@@ -47,15 +47,10 @@ func runFetchJob(db *gorm.DB) error {
 }
 
 func searchSketchyCommits() ([]SearchResultItem, error) {
-	var results []SearchResultItem
-
 	// Note: don't perform this search concurrently - GitHub does NOT like that.
-	for _, query := range QueryKeywords {
-		res, err := searchCommits(query, 1)
-		if err != nil {
-			return nil, err
-		}
-		results = append(results, res...)
+	results, err := searchCommits(strings.Join(QueryKeywords, " OR "), 1)
+	if err != nil {
+		return nil, err
 	}
 
 	log.Printf("Found %d commits total", len(results))
@@ -105,8 +100,8 @@ func searchCommits(query string, page int) ([]SearchResultItem, error) {
 
 	// Recursively search for commits up to the set max page depth
 	if len(results.Items) < results.TotalCount && page < SearchPageDepth {
-		// Wait a second before searching again - GitHub doesn't like rapid fire search requests now
-		time.Sleep(1 * time.Second)
+		// Wait a bit before searching again - GitHub doesn't like rapid fire search requests now
+		time.Sleep(5 * time.Second)
 
 		items, err := searchCommits(query, page+1)
 		if err != nil {
@@ -125,6 +120,7 @@ func buildCommitLogFromResults(results []SearchResultItem) ([]*Commit, error) {
 	for _, item := range results {
 		// Don't build duplicate commits
 		if _, ok := uniqueIDMap[item.SHA]; ok {
+			debugLog(fmt.Sprintf("filtering out commit %s as a duplicate", item.SHA))
 			continue
 		}
 
@@ -134,10 +130,12 @@ func buildCommitLogFromResults(results []SearchResultItem) ([]*Commit, error) {
 		}
 		// We're only interested in commits that happened today
 		if !isDateToday(commitDate) {
+			debugLog(fmt.Sprintf("filtering out commit %s as not from today: %v", item.SHA, commitDate))
 			continue
 		}
 		// Ignore commits from the future 🧙‍♂️
 		if isDateInTheFuture(commitDate) {
+			debugLog(fmt.Sprintf("filtering out commit %s as in the future: %v", item.SHA, commitDate))
 			continue
 		}
 
