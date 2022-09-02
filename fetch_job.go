@@ -18,8 +18,6 @@ import (
 const (
 	// CommitMessageMax is the maximum amount of characters of a commit message that we want to save before truncating
 	CommitMessageMax = 180
-	// SearchPageDepth determines how deep to look into the search results
-	SearchPageDepth = 5
 )
 
 var (
@@ -99,7 +97,7 @@ func searchCommits(query string, page int) ([]SearchResultItem, error) {
 	}
 
 	// Recursively search for commits up to the set max page depth
-	if len(results.Items) < results.TotalCount && page < SearchPageDepth {
+	if len(results.Items) < results.TotalCount && page < viper.GetInt("github.search_page_depth") {
 		// Wait a bit before searching again - GitHub doesn't like rapid fire search requests now
 		time.Sleep(5 * time.Second)
 
