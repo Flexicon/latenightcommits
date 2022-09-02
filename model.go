@@ -74,7 +74,17 @@ func today() time.Time {
 
 // isDateInTheFuture returns true if the date is in the future.
 func isDateInTheFuture(date time.Time) bool {
-	return date.UTC().After(time.Now().UTC())
+	return date.UTC().After(today().UTC())
+}
+
+// isDateInThePast returns true if the date is in the past.
+//
+// Only checks date - not time.
+func isDateInThePast(date time.Time) bool {
+	y1, m1, d1 := date.UTC().Date()
+	y2, m2, d2 := today().UTC().Date()
+
+	return y1 < y2 || (y1 == y2 && m1 < m2) || (y1 == y2 && m1 == m2 && d1 < d2)
 }
 
 // formatNumber returns a formatted string representation of the given number.

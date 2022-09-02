@@ -106,8 +106,10 @@ func searchCommits(query string, page int) ([]SearchResultItem, error) {
 		return nil, errors.Wrap(err, "failed to parse github api response")
 	}
 
-	// Recursively search for commits up to the set max page depth
-	if len(results.Items) < results.TotalCount && page < viper.GetInt("github.search_page_depth") {
+	// Recursively search for commits up to the set max page depth if available
+	hasNextPage := len(results.Items) < results.TotalCount && page < searchPageDepth()
+	// Traverse through available pages as long as past days haven't started to show up
+	if !containsDaysInThePast(results.Items) && hasNextPage {
 		// Wait a bit before searching again - GitHub doesn't like rapid fire search requests now
 		time.Sleep(5 * time.Second)
 
@@ -181,4 +183,20 @@ func saveCommitLog(db *gorm.DB, commits []*Commit) error {
 
 func isSecondaryRateLimitReached(res *http.Response) bool {
 	return res.StatusCode == 403 && res.Header.Get("X-Ratelimit-Remaining") != "0"
+}
+
+func containsDaysInThePast(items []SearchResultItem) bool {
+	for _, item := range items {
+		commitDate, err := item.ParseCommitDate()
+
+		if err == nil && isDateInThePast(commitDate) {
+			return true
+		}
+	}
+
+	return false
+}
+
+func searchPageDepth() int {
+	return viper.GetInt("github.search_page_depth")
 }
