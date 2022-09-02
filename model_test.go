@@ -3,6 +3,8 @@ package main
 import (
 	"testing"
 	"time"
+
+	"github.com/spf13/viper"
 )
 
 func Test_isDateToday(t *testing.T) {
@@ -23,21 +25,46 @@ func Test_isDateToday(t *testing.T) {
 }
 
 func Test_isDateInTheFuture(t *testing.T) {
+	viper.Set("todays_date_override", "2022-09-02T12:30:25")
+
 	cases := []struct {
 		date time.Time
 		want bool
 	}{
 		{date: time.Date(2020, time.January, 1, 0, 0, 0, 0, time.UTC), want: false},
-		{date: time.Now().UTC().Add(-24 * time.Hour), want: false}, // yesterday
-		{date: time.Now().UTC().Add(time.Hour), want: true},        // in 1 hour
-		{date: time.Now().UTC().Add(24 * time.Hour), want: true},   // tomorrow
-		{date: time.Now().UTC().Add(72 * time.Hour), want: true},   // 3 days from now
+		{date: today().UTC().Add(-24 * time.Hour), want: false}, // yesterday
+		{date: today().UTC().Add(time.Hour), want: true},        // in 1 hour
+		{date: today().UTC().Add(24 * time.Hour), want: true},   // tomorrow
+		{date: today().UTC().Add(72 * time.Hour), want: true},   // 3 days from now
 	}
 
 	for _, tc := range cases {
 		got := isDateInTheFuture(tc.date)
 		if got != tc.want {
 			t.Errorf("isDateInTheFuture(%v) == %v, want %v", tc.date, got, tc.want)
+		}
+	}
+}
+
+func Test_isDateInThePast(t *testing.T) {
+	viper.Set("todays_date_override", "2022-09-02T12:30:25")
+
+	cases := []struct {
+		date time.Time
+		want bool
+	}{
+		{date: time.Date(2020, time.January, 1, 0, 0, 0, 0, time.UTC), want: true},
+		{date: today().UTC().Add(-24 * time.Hour), want: true}, // yesterday
+		{date: today().UTC().Add(1 * time.Hour), want: false},  // in 1 hour
+		{date: today().UTC().Add(-1 * time.Hour), want: false}, // 1 hour ago
+		{date: today().UTC().Add(24 * time.Hour), want: false}, // tomorrow
+		{date: today().UTC().Add(-72 * time.Hour), want: true}, // 3 days ago
+	}
+
+	for _, tc := range cases {
+		got := isDateInThePast(tc.date)
+		if got != tc.want {
+			t.Errorf("isDateInThePast(%v) == %v, want %v", tc.date, got, tc.want)
 		}
 	}
 }
