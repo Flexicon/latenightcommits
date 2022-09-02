@@ -3,6 +3,7 @@ package main
 import (
 	"time"
 
+	"github.com/spf13/viper"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )
@@ -56,9 +57,19 @@ func (item *SearchResultItem) ParseCommitDate() (time.Time, error) {
 // isDateToday returns true if the date is today.
 func isDateToday(date time.Time) bool {
 	y1, m1, d1 := date.UTC().Date()
-	y2, m2, d2 := time.Now().UTC().Date()
+	y2, m2, d2 := today().UTC().Date()
 
 	return y1 == y2 && m1 == m2 && d1 == d2
+}
+
+func today() time.Time {
+	override := viper.GetTime("todays_date_override")
+	blank := time.Time{}
+
+	if override == blank {
+		return time.Now()
+	}
+	return override
 }
 
 // isDateInTheFuture returns true if the date is in the future.
