@@ -1,11 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
-	"net/http"
-	"net/url"
 	"strings"
 	"time"
 
@@ -25,10 +22,10 @@ var (
 	QueryKeywords = []string{"fuck", "shit"}
 )
 
-func runFetchJob(db *gorm.DB) error {
+func runFetchJob(db *gorm.DB, api *GitHubAPI) error {
 	log.Println("Running fetch_job...")
 
-	results, err := searchSketchyCommits()
+	results, err := searchSketchyCommits(api)
 	if err != nil {
 		return err
 	}
@@ -44,12 +41,12 @@ func runFetchJob(db *gorm.DB) error {
 	return nil
 }
 
-func searchSketchyCommits() ([]SearchResultItem, error) {
+func searchSketchyCommits(api *GitHubAPI) ([]SearchResultItem, error) {
 	// Note: don't perform this search concurrently - GitHub does NOT like that.
 	var results []SearchResultItem
 
 	for i, q := range QueryKeywords {
-		r, err := searchCommits(q, 1)
+		r, err := searchCommits(api, q, 1)
 		if err != nil {
 			return nil, err
 		}
@@ -66,44 +63,12 @@ func searchSketchyCommits() ([]SearchResultItem, error) {
 	return results, nil
 }
 
-func searchCommits(query string, page int) ([]SearchResultItem, error) {
+func searchCommits(api *GitHubAPI, query string, page int) ([]SearchResultItem, error) {
 	log.Printf("Looking up sketchy commits: '%s' - page %d", query, page)
 
-	ghUser := viper.GetString("github.user")
-	ghToken := viper.GetString("github.token")
-
-	params := url.Values{}
-	params.Add("q", query)
-	params.Add("sort", "author-date")
-	params.Add("order", "desc")
-	params.Add("per_page", "100")
-	params.Add("page", fmt.Sprint(page))
-
-	searchURL, _ := url.Parse("https://api.github.com/search/commits")
-	searchURL.RawQuery = params.Encode()
-
-	req, _ := http.NewRequest(http.MethodGet, searchURL.String(), nil)
-	req.SetBasicAuth(ghUser, ghToken)
-	req.Header.Add("Accept", "application/vnd.github.cloak-preview")
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	results, err := api.SearchCommits(query, page)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to make github api request")
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		if isSecondaryRateLimitReached(resp) {
-			log.Println("Secondary rate limit reached - making too many requests concurrently")
-		}
-		return nil, fmt.Errorf("%s: github api response", resp.Status)
-	}
-
-	var results *SearchResults
-	err = json.NewDecoder(resp.Body).Decode(&results)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to parse github api response")
+		return nil, err
 	}
 
 	// Recursively search for commits up to the set max page depth if available
@@ -113,7 +78,7 @@ func searchCommits(query string, page int) ([]SearchResultItem, error) {
 		// Wait a bit before searching again - GitHub doesn't like rapid fire search requests now
 		time.Sleep(5 * time.Second)
 
-		items, err := searchCommits(query, page+1)
+		items, err := searchCommits(api, query, page+1)
 		if err != nil {
 			return nil, err
 		}
@@ -179,10 +144,6 @@ func saveCommitLog(db *gorm.DB, commits []*Commit) error {
 	log.Printf("Saving %d commits", len(commits))
 
 	return db.Clauses(clause.OnConflict{DoNothing: true}).Create(commits).Error
-}
-
-func isSecondaryRateLimitReached(res *http.Response) bool {
-	return res.StatusCode == 403 && res.Header.Get("X-Ratelimit-Remaining") != "0"
 }
 
 func containsDaysInThePast(items []SearchResultItem) bool {

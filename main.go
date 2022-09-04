@@ -35,9 +35,13 @@ func run() error {
 		return err
 	}
 
+	api := NewGitHubAPI()
+
 	switch *mode {
 	case "fetch":
-		return runFetchJob(db)
+		return runFetchJob(db, api)
+	case "fetch_worker":
+		return runFetchWorker(db, api)
 	case "web":
 		return runWebApp(db)
 	default:
