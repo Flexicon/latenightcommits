@@ -55,6 +55,9 @@ github.com/pelletier/go-toml/v2/internal/tracker
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors
+# github.com/robfig/cron/v3 v3.0.1
+## explicit
+github.com/robfig/cron/v3
 # github.com/spf13/afero v1.8.2
 github.com/spf13/afero
 github.com/spf13/afero/mem
