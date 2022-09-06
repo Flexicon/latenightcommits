@@ -14,7 +14,7 @@ func runFetchWorker(db *gorm.DB, api *GitHubAPI) error {
 
 	_, err := scheduler.AddFunc("*/10 * * * *", func() {
 		if err := runFetchJob(db, api); err != nil {
-			log.Fatalln(err)
+			log.Printf("Fetch job error: %v", err)
 		}
 	})
 	if err != nil {
