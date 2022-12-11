@@ -28,7 +28,7 @@ func runFetchWorker(db *gorm.DB, api *GitHubAPI) error {
 	// Run fetch job on a schedule
 	scheduler := cron.New()
 
-	if _, err := scheduler.AddFunc("*/10 * * * *", func() {
+	if _, err := scheduler.AddFunc(viper.GetString("fetch_worker.schedule"), func() {
 		if err := runFetchJob(db, api); err != nil {
 			log.Printf("Fetch job error: %v", err)
 		}
