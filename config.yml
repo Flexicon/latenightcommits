@@ -7,3 +7,6 @@ database:
 github:
   user: flexicon
   token: ""
+
+fetch_worker:
+  schedule: "*/10 * * * *"
