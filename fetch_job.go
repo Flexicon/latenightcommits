@@ -38,6 +38,8 @@ func runFetchJob(db *gorm.DB, api *GitHubAPI) error {
 	if len(commits) != 0 {
 		return saveCommitLog(db, commits)
 	}
+
+	log.Println("No commits to save")
 	return nil
 }
 
@@ -53,7 +55,8 @@ func searchSketchyCommits(api *GitHubAPI) ([]SearchResultItem, error) {
 		results = append(results, r...)
 
 		if i < len(QueryKeywords)-1 {
-			// Wait a bit in between queries - GitHub secondary rate limiting is strict.
+			// GitHub secondary rate limiting is strict
+			log.Println("Waiting a bit in between keyword queries (10s)")
 			time.Sleep(10 * time.Second)
 		}
 	}
@@ -151,6 +154,7 @@ func containsDaysInThePast(items []SearchResultItem) bool {
 		commitDate, err := item.ParseCommitDate()
 
 		if err == nil && isDateInThePast(commitDate) {
+			debugLog(fmt.Sprintf("Day in past found: %v for commit %s", commitDate, item.SHA))
 			return true
 		}
 	}
