@@ -19,7 +19,7 @@ const (
 
 var (
 	// QueryKeywords to use when searching through commits
-	QueryKeywords = []string{"fuck", "shit"}
+	QueryKeywords = []string{"fuck", "shit", "crap", "damn", "fucking"}
 )
 
 func runFetchJob(db *gorm.DB, api *GitHubAPI) error {
