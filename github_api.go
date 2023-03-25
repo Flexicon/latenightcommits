@@ -14,9 +14,9 @@ import (
 )
 
 type GitHubAPI struct {
+	httpc *http.Client
 	user  string
 	token string
-	httpc *http.Client
 }
 
 func NewGitHubAPI() *GitHubAPI {

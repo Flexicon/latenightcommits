@@ -12,9 +12,9 @@ import (
 //
 // https://docs.github.com/en/free-pro-team@latest/rest/reference/search#search-commits
 type SearchResults struct {
+	Items             []SearchResultItem `json:"items"`
 	TotalCount        int                `json:"total_count"`
 	IncompleteResults bool               `json:"incomplete_results"`
-	Items             []SearchResultItem `json:"items"`
 }
 
 // SearchResultItem represents an individual item in the search results for the Github search commits API

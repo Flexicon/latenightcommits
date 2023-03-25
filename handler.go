@@ -56,13 +56,13 @@ func commitLogHandler(db *gorm.DB) echo.HandlerFunc {
 
 func statsHandler(db *gorm.DB) echo.HandlerFunc {
 	type DailyStatsResults struct {
-		Count int64
 		Date  time.Time
+		Count int64
 	}
 
 	type CachedStats struct {
-		TotalCommits int64
 		DailyStats   []*DailyStatsResults
+		TotalCommits int64
 	}
 
 	var statsCache *CachedStats
