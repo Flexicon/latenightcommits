@@ -47,8 +47,8 @@ func searchSketchyCommits(api *GitHubAPI) ([]SearchResultItem, error) {
 	// Note: don't perform this search concurrently - GitHub does NOT like that.
 	var results []SearchResultItem
 
-	for i, q := range QueryKeywords {
-		r, err := searchCommits(api, q, 1)
+	for i, k := range QueryKeywords {
+		r, err := searchCommits(api, keywordWithDateQualifier(k, today()), 1)
 		if err != nil {
 			return nil, err
 		}
@@ -111,11 +111,6 @@ func buildCommitLogFromResults(results []SearchResultItem) ([]*Commit, error) {
 			debugLog(fmt.Sprintf("filtering out commit %s as not from today: %v", item.SHA, commitDate))
 			continue
 		}
-		// Ignore commits from the future 🧙‍♂️
-		if isDateInTheFuture(commitDate) {
-			debugLog(fmt.Sprintf("filtering out commit %s as in the future: %v", item.SHA, commitDate))
-			continue
-		}
 
 		c := &Commit{
 			ID:        item.SHA,
@@ -160,6 +155,10 @@ func containsDaysInThePast(items []SearchResultItem) bool {
 	}
 
 	return false
+}
+
+func keywordWithDateQualifier(keyword string, date time.Time) string {
+	return fmt.Sprintf("%s author-date:%s", keyword, date.Format("2006-01-02"))
 }
 
 func searchPageDepth() int {
