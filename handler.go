@@ -83,6 +83,7 @@ func statsHandler(db *gorm.DB) echo.HandlerFunc {
 				Raw(`
 					SELECT COUNT(id) as 'count', DATE(created_at) as 'date'
 					FROM commits
+					WHERE created_at >= (CURRENT_DATE - INTERVAL 7 DAY)
 					GROUP BY date
 					ORDER BY date DESC
 					LIMIT 7;
