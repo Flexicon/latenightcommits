@@ -45,7 +45,18 @@ func commitLogHandler(db *gorm.DB) echo.HandlerFunc {
 
 		var commits []*Commit
 		offset := (page - 1) * limit
-		db.Order("created_at desc").Limit(limit).Offset(offset).Find(&commits)
+		dbSession := db.Session(&gorm.Session{PrepareStmt: true})
+
+		if err := dbSession.Raw(`
+				SELECT c.*
+				FROM commits c
+				INNER JOIN (
+					SELECT id FROM commits ORDER BY created_at DESC LIMIT ? OFFSET ?
+				) cid ON c.id = cid.id
+				ORDER BY created_at DESC
+			`, limit, offset).Scan(&commits).Error; err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "failed to retrieve commits")
+		}
 
 		return c.JSON(http.StatusOK, CommitLogResponse{
 			Log:         commits,
