@@ -112,6 +112,12 @@ func buildCommitLogFromResults(results []SearchResultItem) ([]*Commit, error) {
 			continue
 		}
 
+		// Ignore commits from the future
+		if isDateInTheFuture(commitDate) {
+			debugLog(fmt.Sprintf("filtering out commit %s as from the future: %v", item.SHA, commitDate))
+			continue
+		}
+
 		c := &Commit{
 			ID:        item.SHA,
 			CreatedAt: commitDate,
