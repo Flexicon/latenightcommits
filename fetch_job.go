@@ -133,7 +133,7 @@ func buildCommitLogFromResults(results []SearchResultItem) ([]*Commit, error) {
 
 		// Only add Commit if any queried keyword is a part of the visible message after truncating
 		for _, keyword := range QueryKeywords {
-			if strings.Contains(strings.ToLower(c.Message), keyword) {
+			if messageContainsKeyword(c.Message, keyword) {
 				uniqueIDMap[item.SHA] = true
 				commits = append(commits, c)
 				break

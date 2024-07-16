@@ -93,3 +93,29 @@ func Test_formatNumber(t *testing.T) {
 		}
 	}
 }
+
+func Test_messageContainsKeyword(t *testing.T) {
+	cases := []struct {
+		msg  string
+		key  string
+		want bool
+	}{
+		{msg: "Hello World", key: "hello", want: true},
+		{msg: "Hello world", key: "world", want: true},
+		{msg: "Hello world, sir", key: "world", want: true},
+		{msg: "foo-bar-baz", key: "bar", want: true},
+		{msg: "Hello World", key: "foo", want: false},
+		{msg: "Hello World", key: "bar", want: false},
+		{msg: "Other-worldly", key: "world", want: false},
+		{msg: "Total fatality", key: "fatal", want: false},
+		{msg: "This is hyphenated one: foo-bar", key: "foo-bar", want: true},
+		{msg: "This is a MuLtI WorD example", key: "multi word", want: true},
+	}
+
+	for _, tc := range cases {
+		got := messageContainsKeyword(tc.msg, tc.key)
+		if got != tc.want {
+			t.Errorf("messageContainsKeyword(%q, %q) == %v, want %v", tc.msg, tc.key, got, tc.want)
+		}
+	}
+}

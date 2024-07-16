@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"regexp"
 	"time"
 
 	"github.com/spf13/viper"
@@ -92,4 +94,16 @@ func isDateInThePast(date time.Time) bool {
 // Example: formatNumber(2499) == "2,499"
 func formatNumber(n int64) string {
 	return message.NewPrinter(language.English).Sprintf("%d", n)
+}
+
+// messageContainsKeyword returns true if the message contains the keyword.
+//
+// The keyword is case-insensitive and must be a whole word.
+func messageContainsKeyword(msg, keyword string) bool {
+	r, err := regexp.Compile(fmt.Sprintf(`(?i)\b%s\b`, keyword))
+	if err != nil {
+		return false
+	}
+
+	return r.MatchString(msg)
 }
