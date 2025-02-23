@@ -11,6 +11,3 @@ github:
 telegram:
   bot_token: ''
   chat_id: ''
-
-fetch_worker:
-  schedule: '*/10 * * * *'

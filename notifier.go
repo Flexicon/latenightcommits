@@ -15,8 +15,9 @@ type Notifier interface {
 // NoopNotifier simply performs a no-op instead of notifying any external system.
 type NoopNotifier struct{}
 
-// Notify returns nil immediately.
+// Notify logs the message and returns nil immediately.
 func (n *NoopNotifier) Notify(msg string) error {
+	log.Printf("NoopNotifier:\n%s\n", msg)
 	return nil
 }
 

@@ -45,6 +45,8 @@ func run() error {
 		return runFetchWorker(db, api, notifier)
 	case "send_daily_notification":
 		return runDailyNotification(db, notifier)
+	case "send_weekly_notification":
+		return runWeeklyNotification(db, notifier)
 	case "web":
 		return runWebApp(db)
 	default:
@@ -83,6 +85,7 @@ func ViperInit() error {
 	viper.SetDefault("github.search_page_depth", 5)
 	viper.SetDefault("fetch_worker.schedule", "*/10 * * * *")
 	viper.SetDefault("daily_notifier.schedule", "0 10 * * *")
+	viper.SetDefault("weekly_notifier.schedule", "0 10 * * 6")
 
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {

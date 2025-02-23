@@ -8,6 +8,8 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
+var NoScheduleError = errors.New("no schedule provided")
+
 // Scheduler handles running jobs on a given cron Schedule.
 type Scheduler struct {
 	cron *cron.Cron
@@ -32,6 +34,10 @@ type JobDefinition struct {
 
 // AddJob adds a job to the Scheduler to be run on the given spec schedule and name.
 func (s *Scheduler) AddJob(job *JobDefinition) error {
+	if job.Schedule == "" {
+		return NoScheduleError
+	}
+
 	if _, err := s.cron.AddFunc(job.Schedule, func() {
 		if err := job.Run(); err != nil {
 			log.Printf("%s job error: %v", job.Name, err)

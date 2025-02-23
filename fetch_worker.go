@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
 )
@@ -34,6 +35,13 @@ func runFetchWorker(db *gorm.DB, api *GitHubAPI, notifier Notifier) error {
 			},
 		},
 		{
+			Name:     "weekly_notifier",
+			Schedule: viper.GetString("weekly_notifier.schedule"),
+			Run: func() error {
+				return runDailyNotification(db, notifier)
+			},
+		},
+		{
 			Name:     "fetch_commits",
 			Schedule: viper.GetString("fetch_worker.schedule"),
 			Run: func() error {
@@ -43,10 +51,14 @@ func runFetchWorker(db *gorm.DB, api *GitHubAPI, notifier Notifier) error {
 	}
 
 	for _, job := range jobs {
-		log.Printf(`Scheduling %s worker to run on "%s"`, job.Name, job.Schedule)
 		if err := scheduler.AddJob(job); err != nil {
-			return err
+			if errors.Is(err, NoScheduleError) {
+				log.Printf("No schedule provided for %s worker, skipping", job.Name)
+				continue
+			}
+			return errors.Wrapf(err, "failed to schedule %s worker", job.Name)
 		}
+		log.Printf(`Scheduled %s worker to run on "%s"`, job.Name, job.Schedule)
 	}
 
 	scheduler.Run()
