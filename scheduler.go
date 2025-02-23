@@ -8,6 +8,7 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
+// NoScheduleError is returned when a job is added without a schedule.
 var NoScheduleError = errors.New("no schedule provided")
 
 // Scheduler handles running jobs on a given cron Schedule.
