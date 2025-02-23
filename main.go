@@ -83,9 +83,6 @@ func ViperInit() error {
 	// Defaults
 	viper.SetDefault("port", 80)
 	viper.SetDefault("github.search_page_depth", 5)
-	viper.SetDefault("fetch_worker.schedule", "*/10 * * * *")
-	viper.SetDefault("daily_notifier.schedule", "0 10 * * *")
-	viper.SetDefault("weekly_notifier.schedule", "0 10 * * 6")
 
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
