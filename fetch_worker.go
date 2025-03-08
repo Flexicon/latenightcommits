@@ -38,7 +38,7 @@ func runFetchWorker(db *gorm.DB, api *GitHubAPI, notifier Notifier) error {
 			Name:     "weekly_notifier",
 			Schedule: viper.GetString("weekly_notifier.schedule"),
 			Run: func() error {
-				return runDailyNotification(db, notifier)
+				return runWeeklyNotification(db, notifier)
 			},
 		},
 		{
