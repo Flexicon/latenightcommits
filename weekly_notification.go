@@ -16,7 +16,7 @@ const (
 Stats for commits fetched in the last 7 days:
 
 %s
-Total commits fetched: %s
+Total commits fetched: <b>%s</b>
 
 ℹ️ Check out the <a href="https://latenightcommits.com/api/stats">stats page</a> for more.`
 )
@@ -54,7 +54,7 @@ func runWeeklyNotification(db *gorm.DB, notifier Notifier) error {
 	var dailyMessageBuilder strings.Builder
 	for _, s := range stats.Daily {
 		dailyMessageBuilder.WriteString(
-			fmt.Sprintf("• <b>%s</b> commits on %s (%s)\n", formatNumber(s.Count), s.Date.Format("Jan 02"), s.Date.Format("Mon")),
+			fmt.Sprintf("• <b>%s</b> commits on %s (%s)\n", formatNumber(s.Count), s.Date.Format("Mon"), s.Date.Format("Jan 02")),
 		)
 	}
 
