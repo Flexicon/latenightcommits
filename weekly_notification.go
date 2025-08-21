@@ -54,7 +54,7 @@ func runWeeklyNotification(db *gorm.DB, notifier Notifier) error {
 	var dailyMessageBuilder strings.Builder
 	for _, s := range stats.Daily {
 		dailyMessageBuilder.WriteString(
-			fmt.Sprintf("📅 %s: %s\n", s.Date.Format("2006-01-02"), formatNumber(s.Count)),
+			fmt.Sprintf("• <b>%s</b> commits on %s\n", formatNumber(s.Count), s.Date.Format("2006-01-02")),
 		)
 	}
 
