@@ -24,7 +24,7 @@ func runFetchWorker(db *gorm.DB, api *GitHubAPI, notifier Notifier) error {
 		log.Fatalln(http.ListenAndServe(":"+viper.GetString("port"), nil))
 	}()
 
-	// Run fetch job on a schedule
+	// Run background jobs on a schedule
 	scheduler := NewScheduler()
 	jobs := []*JobDefinition{
 		{

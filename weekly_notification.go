@@ -67,6 +67,6 @@ func runWeeklyNotification(db *gorm.DB, notifier Notifier) error {
 		return errors.Wrap(err, "failed to notify")
 	}
 
-	log.Println("Successfully sent daily notification!")
+	log.Println("Successfully sent weekly notification!")
 	return nil
 }
