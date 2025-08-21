@@ -11,14 +11,14 @@ import (
 )
 
 const (
-	WeeklyNotificationTemplate = `📢 *LateNightCommits Weekly Notifier* 📊
+	WeeklyNotificationTemplate = `📢 <b>LateNightCommits Weekly Notifier</b> 📊
 
 Stats for commits fetched in the last 7 days:
 
 %s
 Total commits fetched: %s
 
-ℹ️ Check out the [stats page](https://latenightcommits.com/api/stats) for more\.`
+ℹ️ Check out the <a href="https://latenightcommits.com/api/stats">stats page</a> for more.`
 )
 
 func runWeeklyNotification(db *gorm.DB, notifier Notifier) error {

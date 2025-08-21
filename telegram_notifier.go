@@ -30,7 +30,7 @@ func (t *TelegramNotifier) Notify(msg string) error {
 	form := url.Values{}
 	form.Set("text", msg)
 	form.Set("chat_id", t.chatID)
-	form.Set("parse_mode", "MarkdownV2")
+	form.Set("parse_mode", "HTML")
 
 	req, err := http.NewRequest(http.MethodPost, notifyURL, strings.NewReader(form.Encode()))
 	if err != nil {
