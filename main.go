@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"log"
+	"net/http"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -60,6 +61,10 @@ func runWebApp(db *gorm.DB) error {
 
 	e.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{DisableStackAll: true}))
 	e.Use(middleware.Secure())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{http.MethodGet, http.MethodHead, http.MethodOptions},
+	}))
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: "REQUEST: method=${method}, status=${status}, uri=${uri}, latency=${latency_human}\n",
 	}))
