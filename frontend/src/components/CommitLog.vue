@@ -12,8 +12,8 @@
 </template>
 
 <script>
-import CommitLogItem from './CommitLogItem';
-import Spinner from './Spinner';
+import CommitLogItem from './CommitLogItem.vue';
+import Spinner from './Spinner.vue';
 
 export default {
   components: {

@@ -8,8 +8,13 @@
 <script>
 import { reactive, ref } from 'vue';
 
-import Header from '@/components/Header';
-import CommitLog from '@/components/CommitLog';
+import Header from '@/components/Header.vue';
+import CommitLog from '@/components/CommitLog.vue';
+
+const API_BASE_URL = (
+  import.meta.env.VITE_API_BASE_URL ||
+  'https://latenightcommits-api.nerfthis.xyz'
+).replace(/\/+$/, '');
 
 export default {
   components: {
@@ -24,7 +29,7 @@ export default {
 
     const fetchNextLogPage = () => {
       busy.value = true;
-      fetch(`/api/commitlog?page=${page}&per_page=50`)
+      fetch(`${API_BASE_URL}/commitlog?page=${page}&per_page=50`)
         .then((res) => res.json())
         .then((res) => {
           commits.push(...res.log);

@@ -44,7 +44,8 @@
 </template>
 
 <script>
-import { format, formatDistanceToNow } from 'date-fns/esm';
+import { format, formatDistanceToNow } from 'date-fns';
+import redactedUser from '@/assets/redacted_user.svg';
 
 export default {
   props: {
@@ -60,7 +61,7 @@ export default {
       return this.author || 'anonymous';
     },
     displayImage() {
-      return this.avatar_url || require('@/assets/redacted_user.svg');
+      return this.avatar_url || redactedUser;
     },
     authorLink() {
       return `https://github.com/${this.author}`;
